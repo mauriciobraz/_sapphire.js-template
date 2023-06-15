@@ -1,16 +1,16 @@
-"use strict";
+'use strict';
 
-import { copy } from "fs-extra";
-import { resolveTsPaths } from "resolve-tspaths";
-import { build } from "tsup";
+const { build } = require('tsup');
+const { copy } = require('fs-extra');
+const { resolveTsPaths } = require('resolve-tspaths');
 
-import { SOURCE_DIR, TARGET_DIR } from "./_shared";
+const { SOURCE_DIR, TARGET_DIR } = require('./_shared');
 
 /**
  * Transpile TypeScript files to JavaScript and copy static files.
  * @fires {@link build `tsup.build`} to transpile TypeScript files to JavaScript.
  */
-export default async function run() {
+async function run() {
   await build({
     config: true,
   });
@@ -18,10 +18,12 @@ export default async function run() {
   await copy(SOURCE_DIR, TARGET_DIR, {
     overwrite: true,
     preserveTimestamps: true,
-  });
+  }).catch(() => undefined);
 
   await resolveTsPaths();
 }
+
+module.exports = run;
 
 if (require.main === module) {
   void run();
